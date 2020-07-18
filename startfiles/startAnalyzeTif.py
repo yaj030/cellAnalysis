@@ -27,13 +27,13 @@ if not analysis.loadRegistration():
     analysis.imRegistrationAllPosition()
 
 # %%
-fr = 341
+fr = 1
 data, masks = analysis.segmentOneSlice(2,fr,1)
 #%%
 analysis.segmentPositionTimeZ([2],range(1,342),Zs=None)
 
 # %%
-ch = 1
+ch = 3
 figure, (ax1, ax2) = plt.subplots(1,2)
 image = analysis.fileClass.getOneSlice(2,fr,1)
 separated = analysis.experimentObj.getChannelImage(image,ch, 2,fr,1)

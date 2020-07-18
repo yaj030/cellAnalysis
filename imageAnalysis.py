@@ -74,20 +74,12 @@ class IMAGE_ANALYSIS:
             if saveAsRuntime:
                 for frame in frames:
                     print('segment frame '+str(frame))
-                    #allZresult = []
-                    #allZmask = []
                     if Zs==None:
-                        # the reason did not set z to 1 is the file naming. with z=1, the file name 
-                        # start with z1
                         result, masks = self.segmentOneSlice(position,frame,z=None)
-                    #    allZresult.append(result)
-                    #    allZmask.append(masks)
                         self.experimentObj.append2MaskTif(masks,position)
                     else:
                         for z in Zs:
                             result, masks = self.segmentOneSlice(position,frame,z)
-                    #        allZresult.append(result)
-                    #        allZmask.append(masks)
                             self.experimentObj.append2MaskTif(masks,position,z)
             else:
                 allFrameResult = []

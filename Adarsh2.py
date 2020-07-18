@@ -21,6 +21,9 @@ session = tf.Session()
 
 
 class Adarsh2(SegmentationMethods):
+    # compare to Adarsh, this methods deal with contrast-equalized images
+    # take a look of line 85, and this option is not default, has to manually set 
+    # analysis.segmentation_options = {'equalize':True}
     def __init__(self, imAnalysis):
         print('This method is only for aging experiment')
         self.imAnalysis = imAnalysis
@@ -33,8 +36,8 @@ class Adarsh2(SegmentationMethods):
         # all files need to be put in the same folder with segmentation.py
         if isinstance(self.imAnalysis.scope, microscope.JulieMicroscope):
             self.weightPath = join(self.currentPath, 'JulieScopeNew.h5')
-        elif isinstance(self.imAnalysis.scope, microscope.YANGMICROSCOPE):
-            self.weightPath = join(self.currentPath, '')
+        elif isinstance(self.imAnalysis.scope, microscope.YangMicroscope):
+            self.weightPath = join(self.currentPath, 'YangMicroscopeNew.h5')
         else:
             print('no weight path selected')
 

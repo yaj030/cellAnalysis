@@ -56,13 +56,14 @@ class COUNTCELLDIVISION:
         self.all_motherTrackers = []
         self.constructColorImages()
         self.updatePosition(positions[0])
+        self.readResults()
         self.startWindow()
     def constructColorImages(self):
-        self.img_red = np.zeros((160,60,3),dtype=np.uint8)
+        self.img_red = np.zeros((self.scopeUsed.separateHeight,self.scopeUsed.separateWidth*2,3),dtype=np.uint8)
+        self.img_green = np.copy(self.img_red)
+        self.img_blue = np.copy(self.img_red) 
         self.img_red[:,:,0] = 255
-        self.img_green = np.zeros((160,60,3),dtype=np.uint8)
         self.img_green[:,:,1] = 255
-        self.img_blue = np.zeros((160,60,3),dtype=np.uint8)
         self.img_blue[:,:,2] = 255
 
     def startWindow(self):
@@ -98,11 +99,27 @@ class COUNTCELLDIVISION:
             for ch in range(self.numb_channels):
                 self.all_motherTrackers[ch].saveTxt(txt2write)
 
+    def readResults(self):
+        if path.exists(self.posFolderName+'_lifespan.txt'):
+            with open(self.posFolderName+'_lifespan.txt', 'r') as txt2read:
+                contents = txt2read.readlines()
+            for line in contents:
+                word = [int(ii)-1 for ii in line.split()]
+                trap = word[0]
+                self.all_motherTrackers[trap].deathType = word[1]+1
+                self.all_motherTrackers[trap].firstFrame = word[2]
+                self.all_motherTrackers[trap].lastFrame = word[3]
+                divisionTimes = word[4:]
+                self.all_motherTrackers[trap].divisionTimes = divisionTimes
+                start = 0
+                ending = self.totalCounts
+                self.all_motherTrackers[trap].divisionTimesCurrentPage = \
+                    [i for i in divisionTimes if i>=start and i<ending]
+
 class TRACKMOTHER:
     def __init__(self, motherTrackerManager, ch):
         self.motherTrackerManager = motherTrackerManager
         self.ch = ch
-        self.motherLabelNumb = 12
         self.updatePosition()
 
     def updatePosition(self):
@@ -139,7 +156,7 @@ class TRACKMOTHER:
         assert(self.numb_frames == self.motherTrackerManager.numbFrames, "number of frames don't match")
         self.height = img.shape[0]
         self.width = img.shape[1]
-        self.numb_pages = ceil((self.numb_frames-1)/self.motherTrackerManager.totalCounts)
+        self.numb_pages = ceil((self.numb_frames)/self.motherTrackerManager.totalCounts)
         self.all_images_phase = np.copy(img)
         for fr in range(self.numb_frames):
             self.all_images_phase[:,:,fr] = img[:,:,fr]
@@ -178,7 +195,7 @@ class TRACKMOTHER:
                 img2 = self.motherTrackerManager.img_green
             elif color=='blue':
                 img2 = self.motherTrackerManager.img_blue
-            img2[10:-10,10:-10,:] = img[10:-10,10:-10,:]
+            img2[5:-5,5:-5,:] = img[5:-5,5:-5,:]
             self.currentPageImgColor[yy*self.height:(yy+1)*self.height,xx*self.width:(xx+1)*self.width,:] = img2
         
 class DISPLAYCELLTRACKING(Frame):
@@ -220,6 +237,7 @@ class DISPLAYCELLTRACKING(Frame):
         self.radioButtonDt1.grid(row=1,column=4)
         self.radioButtonDt2 = Radiobutton(self, text='Death Type 2',variable=self.deathTypeValue,value=2,command=self.setDeathType) 
         self.radioButtonDt2.grid(row=1,column=5)
+        self.repaint()
 
     def changeSave(self):
         self.motherTracker.saveOrNot = self.chkValue.get()

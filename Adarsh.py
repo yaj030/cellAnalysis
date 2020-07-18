@@ -33,8 +33,8 @@ class Adarsh(SegmentationMethods):
         # all files need to be put in the same folder with segmentation.py
         if isinstance(self.imAnalysis.scope, microscope.JulieMicroscope):
             self.weightPath = join(self.currentPath, 'JulieMicroscopeWeight.h5')
-        elif isinstance(self.imAnalysis.scope, microscope.YANGMICROSCOPE):
-            self.weightPath = join(self.currentPath, '')
+        elif isinstance(self.imAnalysis.scope, microscope.YangMicroscope):
+            self.weightPath = join(self.currentPath, 'YangMicroscopeWeight.h5')
         else:
             print('no weight path selected')
 
