@@ -77,7 +77,6 @@ class MICROSCOPE:
         # get the left lower corner image
         template = imread(join(self.currentPath, self.templateFileName))
         result = match_template(image, template)
-        #
         ChLocations_x = []
         ChLocations_y = []
         for ii in range(self.numChannels):
@@ -88,9 +87,9 @@ class MICROSCOPE:
             # y, x is the bottom center position of the cell trap
             ChLocations_x.append(x)
             ChLocations_y.append(y)
-        x2 = np.uint16(replaceOutliers(range(0,self.numChannels), ChLocations_x,15))
-        y2 = np.uint16(replaceOutliers(range(0,self.numChannels), ChLocations_y,15))
-        return x2, y2
+        x2 = np.int16(replaceOutliers(range(0,self.numChannels), ChLocations_x,15))
+        y2 = np.int16(replaceOutliers(range(0,self.numChannels), ChLocations_y,15))
+        return x2.tolist(), y2.tolist()
 
     def changeColorNaming(self, colors):
         res = [sub.replace('BF', 'phase') for sub in colors] 

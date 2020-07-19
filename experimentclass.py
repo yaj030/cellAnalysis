@@ -4,6 +4,7 @@ from tifffile import imwrite as tifwrite
 from tifffile import TiffWriter
 import numpy as np
 import pickle
+import json
 from skimage.io import imread, imsave
 from skimage.feature import register_translation
 from skimage import exposure, img_as_ubyte 
@@ -44,23 +45,27 @@ class EXPERIMENT_TYPE:
         shiftsAllPositions = []
         for position in positions2reg:
             shifts = []
-            shifts.append(np.zeros([2,]))
+            #shifts.append(np.zeros([2,]))
+            shifts.append(np.zeros([2,]).tolist())
             zeroFrame = self.imAnalysis.fileClass.getOneSliceColor(position,1,1)
             for frame in range(2, self.imAnalysis.totalFrames+1):
                 secondFrame = self.imAnalysis.fileClass.getOneSliceColor(position,frame,1)
                 shift, _, _ = register_translation(self.getRegArea(zeroFrame), self.getRegArea(secondFrame),10)
-                shifts.append(shift)
+                #shifts.append(shift)
+                shifts.append(shift.tolist())
             shiftsAllPositions.append(shifts)
             print(time.time() - start_time)
         # shift is save as a dict
         self.imAnalysis.registration = dict(zip(positions2reg,shiftsAllPositions))
         saveFilePath = path.join(self.imAnalysis.experimentPath,'registration.pkl')
         pickle.dump(self.imAnalysis.registration,open(saveFilePath,'wb'))
+        saveFilePath = path.join(self.imAnalysis.experimentPath,'registration.json')
+        json.dump(self.imAnalysis.registration,open(saveFilePath,'w'))
         print('finished registration')
 
 class agingExperiment(EXPERIMENT_TYPE):
     def __init__(self):
-        self.segmentationMethodName = 'Adarsh' #default method
+        self.segmentationMethodName = 'Adarsh2' #default method
 
     def getRegArea(self, image):
         # it is tested for Julie scope, should be fine with Yang's too
@@ -140,18 +145,17 @@ class agingExperiment(EXPERIMENT_TYPE):
         self.ChLocations_y = dict(zip(positions, ys))
         saveFilePath = path.join(self.imAnalysis.experimentPath,'channelLocation.pkl')
         pickle.dump([self.ChLocations_x,self.ChLocations_y],open(saveFilePath,'wb'))
+        saveFilePath = path.join(self.imAnalysis.experimentPath,'channelLocation.json')
+        json.dump([self.ChLocations_x,self.ChLocations_y],open(saveFilePath,'w'))
 
     def loadChLocations(self):
         ChLocPath = path.join(self.imAnalysis.experimentPath, 'channelLocation.pkl')
         if path.exists(ChLocPath):
-            try:
-                dataload = pickle.load(open(ChLocPath,'rb'))
-                self.ChLocations_x = dataload[0]
-                self.ChLocations_y = dataload[1]
-                print('channel locations loaded')
-                return True
-            except:
-                print('can not load channel locations information')
+            dataload = pickle.load(open(ChLocPath,'rb'))
+            self.ChLocations_x = dataload[0]
+            self.ChLocations_y = dataload[1]
+            print('channel locations loaded, pickle')
+            return True
         else:
             print('channel locations not searched yet')
             return False

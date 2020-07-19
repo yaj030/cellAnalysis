@@ -3,6 +3,7 @@ import imageFileClass
 import experimentclass
 import microscope
 import pickle
+import json
 from tifffile import imwrite as tifwrite
 import gc
 class IMAGE_ANALYSIS: 
@@ -52,12 +53,9 @@ class IMAGE_ANALYSIS:
     def loadRegistration(self):
         registrationPath = path.join(self.experimentPath, 'registration.pkl')
         if path.exists(registrationPath):
-            try:
-                self.registration = pickle.load(open(registrationPath,'rb'))
-                print('loaded registration information')
-                return True
-            except:
-                print('can not load registration information')
+            self.registration = pickle.load(open(registrationPath,'rb'))
+            print('loaded registration information, pickle')
+            return True
         else:
             print('images not registered yet')
             return False
