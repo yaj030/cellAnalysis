@@ -54,6 +54,8 @@ class COUNTCELLDIVISION:
         self.currentPosition = 0
         self.currentPositionIndex = 0
         self.all_motherTrackers = []
+        self.separatedImage = []
+        self.fileNames = []
         self.constructColorImages()
         self.updatePosition(positions[0])
         self.readResults()
@@ -74,8 +76,8 @@ class COUNTCELLDIVISION:
         self.currentPosition = position
         self.currentPositionIndex = self.positions.index(position)
         self.posFolderName = path.join(self.folderName,'xy'+str(self.currentPosition))
-        self.separatedImage = []
-        self.fileNames = []
+        self.separatedImage.clear()
+        self.fileNames.clear()
         self.getSeparatedImages()
         if self.all_motherTrackers: 
             for ch in range(self.numb_channels):

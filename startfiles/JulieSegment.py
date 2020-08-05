@@ -1,11 +1,16 @@
 
+#%% user input
+filePath = '/home/nas2/yang/Julie/20200609/data'
+colors = ['phase','GFP','iRFP']
+positions2seg = range(1,17)
+#positions2seg = [1,2]
+
 #%%
 import imageAnalysis
 import microscope
 from experimentclass import agingExperiment
 from matplotlib import pyplot as plt
 #%%
-filePath = '/home/nas2/yang/Julie/20200110/data'
 namaPrefix = ''
 experiment = agingExperiment()
 experiment.setSegmentMethod('Adarsh2')
@@ -15,19 +20,17 @@ analysis = imageAnalysis.IMAGE_ANALYSIS(filePath,namaPrefix,scopeUsed,'tif_noZst
 analysis.segmentation_options = {'equalize':True}
 #%%
 analysis.experimentObj.startSegmentMethod()
-analysis.fileClass.setColors(['phase','GFP','iRFP'])
-#analysis.fileClass.setColors(['phase','GFP','mCherry','iRFP'])
+analysis.fileClass.setColors(colors)
+#analysis.fileClass.NDimages.metadata['fields_of_view'] = range(0,4) #this is a step has to perform for truncated ND
 
 
 #%%
-#analysis.fileClass.NDimages.metadata['fields_of_view'] = range(0,4)
 if not analysis.experimentObj.loadChLocations():
     analysis.experimentObj.getChLocAllPositions()
 if not analysis.loadRegistration():
     analysis.imRegistrationAllPosition()
 
 #%%
-#analysis.segmentPositionTimeZ([2],range(1,342),Zs=None)
-analysis.segmentPositionTimeZ(range(1,1),frames=None,Zs=None)
+analysis.segmentPositionTimeZ(positions2seg,frames=None,Zs=None)
 
 # %%

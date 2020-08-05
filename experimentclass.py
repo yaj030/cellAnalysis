@@ -9,7 +9,7 @@ from skimage.io import imread, imsave
 from skimage.feature import register_translation
 from skimage import exposure, img_as_ubyte 
 import time
-from PIL import Image
+#from PIL import Image
 
 class EXPERIMENT_TYPE:
     def setAttr(self, imAnalysis):
@@ -43,9 +43,9 @@ class EXPERIMENT_TYPE:
             positions2reg = [x-1 for x in positions]
         start_time = time.time()
         shiftsAllPositions = []
+        shifts = []
         for position in positions2reg:
-            shifts = []
-            #shifts.append(np.zeros([2,]))
+            shifts.clear()
             shifts.append(np.zeros([2,]).tolist())
             zeroFrame = self.imAnalysis.fileClass.getOneSliceColor(position,1,1)
             for frame in range(2, self.imAnalysis.totalFrames+1):

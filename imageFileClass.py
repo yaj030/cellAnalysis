@@ -5,11 +5,13 @@ from os import mkdir
 import numpy as np
 from tifffile import imwrite as tifwrite
 from tifffile import imread as tifread
+from skimage.transform import rotate
 from glob import glob
 from PIL import Image
 class EXPERIMENT_FILE_CLASS:
     def __init__(self, imAnalysis):
         self.imAnalysis = imAnalysis
+        self.angle = 0
     def updateFileInfo(self):
         pass
     def getShapes(self):
@@ -19,6 +21,16 @@ class EXPERIMENT_FILE_CLASS:
         return 0
     def getOneSliceColor(self,position,frame,color,z=None):
         pass
+    def getAngle(self):
+        angletxt = path.join(self.imAnalysis.experimentPath, 'angle.txt')
+        if path.exists(angletxt):
+            try:
+                f = open(angletxt,'r')
+                self.angle = float(f.readline())
+                print(self.angle)
+                f.close()
+            except:
+                Warning('something wrong with the angle.txt')
 
 class NDfile(EXPERIMENT_FILE_CLASS):
     def __init__(self, imAnalysis):
@@ -35,6 +47,7 @@ class NDfile(EXPERIMENT_FILE_CLASS):
         self.getShapes()
         colors = self.NDimages.metadata['channels']
         self.imAnalysis.colors = self.imAnalysis.scope.changeColorNaming(colors)
+        self.getAngle()
 
     def getShapes(self):
         # this function does not get much use
@@ -150,6 +163,7 @@ class TifFileNoZstackSplitColor(EXPERIMENT_FILE_CLASS):
         else:
             raise('the number or the names of files have something wrong')
         self.getShapes()
+        self.getAngle()
 
     def setColors(self, colors=[]):
         # special for tif files
@@ -182,12 +196,17 @@ class TifFileNoZstackSplitColor(EXPERIMENT_FILE_CLASS):
             fileName = self.getFileName(position, color+1, z)
             print(fileName)
             fileFullPath = path.join(self.imAnalysis.experimentPath, fileName)
-            image[color,:,:] = tifread(fileFullPath, key=frame-1)
+            if self.angle==0:
+                image[color,:,:] = tifread(fileFullPath, key=frame-1)
+            else:
+                image[color,:,:] = rotate(tifread(fileFullPath, key=frame-1),self.angle,preserve_range=True)
         return image
             
     def getOneSliceColor(self,position, frame, color, z=None):
         fileName = self.getFileName(position, color, z)
         fileFullPath = path.join(self.imAnalysis.experimentPath, fileName)
-        image = tifread(fileFullPath, key=frame-1)
-        image = np.uint16(image)
+        if self.angle==0:
+            image = np.uint16(tifread(fileFullPath, key=frame-1))
+        else:
+            image = rotate(np.uint16(tifread(fileFullPath, key=frame-1)),self.angle,preserve_range=True)
         return image

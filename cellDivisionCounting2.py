@@ -61,7 +61,10 @@ class COUNTCELLDIVISION:
 
     def updatePosition(self,position):
         self.currentPosition = position
-        self.separatedImage = []
+        if hasattr(self, 'separatedImage'):
+            self.separatedImage.clear()
+        else:
+            self.separatedImage = []
         self.getSeparatedImages()
         if self.all_motherTrackers: 
             for ch in range(self.numb_channels):

@@ -6,6 +6,7 @@ import pickle
 import json
 from tifffile import imwrite as tifwrite
 import gc
+import time
 class IMAGE_ANALYSIS: 
     def __init__(self, experimentPath, fileNamePrefix, scope,fileType, experimentObj):
         self._experimentPath = experimentPath
@@ -67,36 +68,48 @@ class IMAGE_ANALYSIS:
         # save at the end of run will save a hypertack with z,t
         if frames == None:
             frames = range(1,self.totalFrames+1)
-        for position in positions:
-            #initialize result_matrix
-            if saveAsRuntime:
+        if saveAsRuntime:
+            for position in positions:
                 for frame in frames:
+                    start_time = time.time()
                     print('segment frame '+str(frame))
                     if Zs==None:
-                        result, masks = self.segmentOneSlice(position,frame,z=None)
+                        _, masks = self.segmentOneSlice(position,frame,z=None)
                         self.experimentObj.append2MaskTif(masks,position)
                     else:
                         for z in Zs:
-                            result, masks = self.segmentOneSlice(position,frame,z)
+                            _, masks = self.segmentOneSlice(position,frame,z)
                             self.experimentObj.append2MaskTif(masks,position,z)
-            else:
-                allFrameResult = []
-                allFrameMask = []
+                    print(time.time() - start_time)
+                collected = gc.collect() # or gc.collect(2) 
+                print("postion, Garbage collector: collected {} objects.".format(collected)) 
+        else:
+            #allFrameResult = []
+            allFrameMask = []
+            for position in positions:
+                allFrameMask.clear()
+                allZmask = []
+                #allZresult = []
+                #allFrameResult.clear()
                 for frame in frames:
+                    start_time = time.time()
                     print('segment frame '+str(frame))
-                    allZresult = []
-                    allZmask = []
+                    allZmask.clear()
+                    #allZresult.clear()
                     if Zs==None:
                         Zs=[1]
                     for z in Zs:
-                        result, masks = self.segmentOneSlice(position,frame,z)
-                        allZresult.append(result)
+                        _, masks = self.segmentOneSlice(position,frame,z)
+                        #allZresult.append(result)
                         allZmask.append(masks)
+                    print(time.time() - start_time)
 
-                allFrameResult.append(allZresult)
-                allFrameMask.append(allZmask)
+                    #allFrameResult.append(allZresult)
+                    allFrameMask.append(allZmask)
                 #self.experimentObj.pickleSegResults(allFrameResult,position)
                 self.experimentObj.saveMaskAsTif(allFrameMask,position)
+                collected = gc.collect() # or gc.collect(2) 
+                print("postion, Garbage collector: collected {} objects.".format(collected)) 
 
 
     def segmentOneSlice(self,position,frame,z):
@@ -104,9 +117,9 @@ class IMAGE_ANALYSIS:
         slice2segment = self.fileClass.getOneSlice(position,frame,z)
         segmentResult, masks = self.experimentObj.segmentMethodObj.segment(slice2segment, \
               position, frame)
+        #collected = gc.collect() # or gc.collect(2) 
+        #print("frame Garbage collector: collected {} objects.".format(collected)) 
         return segmentResult, masks
-        collected = gc.collect() # or gc.collect(2) 
-        print("Garbage collector: collected {} objects.".format(collected)) 
 
                         
 

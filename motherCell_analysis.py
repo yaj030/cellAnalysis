@@ -173,8 +173,11 @@ class measureFoci(MEASUREMENT):
                 for fc in foci_mean:
                     if ii>4:
                         print(ii)
-                    self.all_output_data[ch].at[fr,self.outputs[ii]]=fc
-                    ii = ii+1
+                    if ii<8:
+                        self.all_output_data[ch].at[fr,self.outputs[ii]]=fc
+                        ii = ii+1
+                    else:
+                        break
 
 
 

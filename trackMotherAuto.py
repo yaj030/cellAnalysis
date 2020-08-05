@@ -181,8 +181,8 @@ class TRACKMOTHER:
 #%%
 
 #tm = TRACKMOTHER_MANAGER_AUTO('/home/nas2/yang/Julie/20180827/data',13,range(17,33))
-tm = TRACKMOTHER_MANAGER_AUTO('/home/yanfei/Julie_Aging/20191007/',13,[2])
-tm.trackAllPositions()
+#tm = TRACKMOTHER_MANAGER_AUTO('/home/yanfei/Julie_Aging/20191007/',13,[2])
+#tm.trackAllPositions()
 
 
 
