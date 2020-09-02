@@ -112,7 +112,7 @@ class COUNTCELLDIVISION:
                 self.all_motherTrackers[trap].firstFrame = word[2]
                 self.all_motherTrackers[trap].lastFrame = word[3]
                 divisionTimes = word[4:]
-                self.all_motherTrackers[trap].divisionTimes = divisionTimes
+                self.all_motherTrackers[trap].divisionTimes = set(divisionTimes)
                 start = 0
                 ending = self.totalCounts
                 self.all_motherTrackers[trap].divisionTimesCurrentPage = \
