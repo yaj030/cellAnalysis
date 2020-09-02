@@ -1,34 +1,38 @@
-
-#%% user input
+#%%
 filePath = '/home/nas2/yang/Julie/20200717/data'
 colors = ['phase','GFP','iRFP']
-positions2seg = range(9,17)
-#positions2seg = [1,2]
-
+positions = range(1,17)
 #%%
 import imageAnalysis
 import microscope
 from experimentclass import agingExperiment
 from matplotlib import pyplot as plt
-#%%
+import motherCell_analysis
 namaPrefix = ''
 experiment = agingExperiment()
-experiment.setSegmentMethod('Adarsh2')
 scopeUsed = microscope.JulieMicroscope()
 # the fourth argument could be 'ND', 'tif_noZstack'
 analysis = imageAnalysis.IMAGE_ANALYSIS(filePath,namaPrefix,scopeUsed,'tif_noZstack',experiment)
-analysis.segmentation_options = {'equalize':True}
-analysis.experimentObj.startSegmentMethod()
+#analysis.experimentObj.setAttr(analysis)
 analysis.fileClass.setColors(colors)
-#analysis.fileClass.NDimages.metadata['fields_of_view'] = range(0,4) #this is a step has to perform for truncated ND
+#analysis.fileClass.setColors(['phase','GFP','iRFP'])
 
-#%%
+#analysis.fileClass.NDimages.metadata['fields_of_view'] = range(0,4)
 if not analysis.experimentObj.loadChLocations():
     analysis.experimentObj.getChLocAllPositions()
 if not analysis.loadRegistration():
     analysis.imRegistrationAllPosition()
 
-#%%
-analysis.segmentPositionTimeZ(positions2seg,frames=None,Zs=None)
+# %%
+measureGFP = motherCell_analysis.measureFluorInt(analysis,positions,color='GFP')
+measureGFP.measure()
+measureiRFP = motherCell_analysis.measureFluorInt(analysis,positions,color='iRFP')
+measureiRFP.measure()
 
+
+#%%
+measureGFPfoci = motherCell_analysis.measureFoci(analysis,positions,color='GFP',cutoff=1.7)
+measureGFPfoci.measure()
+
+print('haha')
 # %%
