@@ -98,6 +98,9 @@ class AgingDataset(utils.Dataset):
         
     def load_cell_Adarsh(self,data):
         for img in data:
+            image_path = os.path.join(self.dataset_dir, img['External ID'][0:-4] +'.tif')
+            if not os.path.exists(image_path):
+                continue
             polygons = []    
             if 'Masks' in img:
                 try:
