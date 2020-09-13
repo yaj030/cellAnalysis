@@ -40,11 +40,16 @@ class AgingConfig(Config):
     NUM_CLASSES = 1 + 1  # Background + cell
 
     # Number of training steps per epoch
-    STEPS_PER_EPOCH = 100
+    STEPS_PER_EPOCH = 200
 
     # Skip detections with < 70% confidence
     # the ballon example used 90%
     DETECTION_MIN_CONFIDENCE = 0.7
+
+    RPN_ANCHOR_SCALES = (8, 16, 32, 64, 128)
+    RPN_ANCHOR_RATIOS = [0.3, 0.6, 1.2]
+    IMAGE_MIN_DIM = 128
+    IMAGE_MAX_DIM = 256
 
 ############################################################
 #  Dataset
@@ -122,7 +127,12 @@ class AgingDataset(utils.Dataset):
 
     def addImage(self, img, polygons):
         image_path = os.path.join(self.dataset_dir, img['External ID'][0:-4] +'.tif')
-        image = skimage.io.imread(image_path)
+        try:
+            image = skimage.io.imread(image_path)
+            image = skimage.img_as_float(image)
+        except:
+            print(image_path)
+            raise('something is wrong with reading image')
         height, width = image.shape[:2]
 
         self.add_image("cell", image_id=img['External ID'][0:-4] +'.tif',  # use file name as a unique image id
@@ -200,7 +210,8 @@ def train(data_directory,model_path,log_path):
         model.load_weights(weights_path, by_name=True)
 
     # Change brightness of images (50-150% of original value).
-    # This is what Adarsh added
+    # This is what Adarsh added, atually it does not change brightness
+    # it flip some of the images
     augmentation = iaa.SomeOf((0, 1), [iaa.Fliplr(0.5), ])
     
     # *** This training schedule is an example. Update to your needs ***
@@ -213,5 +224,4 @@ def train(data_directory,model_path,log_path):
         learning_rate=config.LEARNING_RATE,
         epochs=50,augmentation=augmentation,
         layers='heads')
-    model.keras_model.save_weights(os.path.join(log_path, 'new.h5'))
 
