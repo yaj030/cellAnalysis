@@ -14,7 +14,7 @@ import tensorflow as tf
 #config = tf.ConfigProto(intra_op_parallelism_threads=2, inter_op_parallelism_threads=2)
 #config.gpu_options.allow_growth = True
 #session = tf.Session(config=config)
-session = tf.Session()
+#session = tf.Session()
 #
 #from keras import backend as K
 #K.set_session(session)
@@ -91,8 +91,8 @@ class Adarsh2(SegmentationMethods):
             result, mask = self.segmentOneChannel(inputImage)
             results.append(result)
             masks.append(mask)
-        masks = dict(zip(range(1,self.imAnalysis.scope.numChannels+1),masks))
-        return results, masks
+        masks_dict = dict(zip(range(1,self.imAnalysis.scope.numChannels+1),masks))
+        return results, masks_dict
 
     def segmentOneChannel(self,image):
         # Adarsh resize the image, I don't see it is necessary

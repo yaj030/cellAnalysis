@@ -199,6 +199,12 @@ class agingExperiment(EXPERIMENT_TYPE):
                         tifwrite(path.join(folderName, 'tif', fileName+'.tif'), subImage)
                         imsave(path.join(folderName,'jpg', fileName+'.jpg'), subImage,check_contrast=False, quality=90)
                         #cv2.imwrite(path.join(folderName,'jpg', fileName+'.jpg'), subImage, [int(cv2.IMWRITE_JPEG_QUALITY), 90])
+                        saveFilePath = path.join(folderName,'tif',fileName+'.tif')
+                        try:
+                            imread(saveFilePath)
+                        except:
+                            print("error reading")
+                            print(saveFilePath)
                 else:
                     separatedImage = self.imAnalysis.scope.separateChannels(image,shifts, ChLocations_x, ChLocations_y)
                     for ch in channels:
@@ -211,6 +217,12 @@ class agingExperiment(EXPERIMENT_TYPE):
                         subImage = exposure.equalize_adapthist(subImage)
                         imsave(path.join(folderName,'jpg', fileName+'.jpg'), subImage, quality=90)
                         #cv2.imwrite(path.join(folderName,'jpg', fileName+'.jpg'), subImage, [int(cv2.IMWRITE_JPEG_QUALITY), 90])
+                        saveFilePath = path.join(folderName,'tif',fileName+'.tif')
+                        try:
+                            imread(saveFilePath)
+                        except:
+                            print("error reading")
+                            print(saveFilePath)
         
 
     def output4Separated(self, positions=[], color=1,outputTif=True):
