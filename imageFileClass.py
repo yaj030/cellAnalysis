@@ -5,6 +5,7 @@ from os import mkdir
 import numpy as np
 from tifffile import imwrite as tifwrite
 from tifffile import imread as tifread
+from tifffile import TiffFile
 from skimage.transform import rotate
 from glob import glob
 from PIL import Image
@@ -177,11 +178,17 @@ class TifFileNoZstackSplitColor(EXPERIMENT_FILE_CLASS):
     def getShapes(self):
         # this function does not get much use
         firstFilePath = path.join(self.imAnalysis.experimentPath, self.allTifFiles[0])
-        image = Image.open(firstFilePath)
-        self.imAnalysis.totalFrames = image.n_frames
-        self.imAnalysis.fovHeight = image.size[1]
-        self.imAnalysis.fovWidth = image.size[0]
-        image.close()
+        try:
+            image = Image.open(firstFilePath)
+            self.imAnalysis.totalFrames = image.n_frames
+            self.imAnalysis.fovHeight = image.size[1]
+            self.imAnalysis.fovWidth = image.size[0]
+            image.close()
+        except:
+            image = TiffFile(firstFilePath)
+            self.imAnalysis.totalFrames = len(image.pages)
+            self.imAnalysis.fovHeight = image.pages[0].shape[0]
+            self.imAnalysis.fovWidth = image.pages[0].shape[1]
 
     def getFileName(self, position, color=1, z=None):
         # special function for tif files
