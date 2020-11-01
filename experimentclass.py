@@ -69,7 +69,7 @@ class agingExperiment(EXPERIMENT_TYPE):
 
     def getRegArea(self, image):
         # it is tested for Julie scope, should be fine with Yang's too
-        return(image[128:,:128])
+        return(image[:,:128])
 
     def pickleSegResults(self, allFrameResult, position):
         # only works for savingAsRuntime = False
@@ -250,12 +250,12 @@ class agingExperiment(EXPERIMENT_TYPE):
                     list_of_channelImage[ch-1][frame-1,:,:] = subImage
             
             if outputTif:
-                savePath = path.join(self.imAnalysis.experimentPath, str(position))
+                savePath = path.join(self.imAnalysis.experimentPath, 'xy'+str(position))
                 print(savePath)
                 if not path.exists(savePath):
                     mkdir(savePath)
                 for ch in channels:
-                    saveFilePath = path.join(savePath,'c'+ str(color)+'ch'+ str(ch)+'.tif')
+                    saveFilePath = path.join(savePath,'xy'+str(position).zfill(2)+'c'+ str(color)+'ch'+ str(ch)+'.tif')
                     tifwrite(saveFilePath, list_of_channelImage[ch-1], imagej=True)
             else:
                 # only work with one position
