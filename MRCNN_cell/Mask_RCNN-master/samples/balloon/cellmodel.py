@@ -91,15 +91,18 @@ class AgingDataset(utils.Dataset):
         # This deal with the json output by Yanfei's labeling
         for img in data:
             polygons = []
-            for region in img['Label']['objects']:
-                xs = []
-                ys = []
-                for xys in region['polygon']:
-                    xs.append(xys['x'])
-                    ys.append(xys['y'])
-                polygons.append({'all_points_x':xs, 'all_points_y': ys})
-            # remember labeling was done with jpg files, training is tif
-            self.addImage(img, polygons)
+            if 'objects' in img['Label'].keys():
+                for region in img['Label']['objects']:
+                    xs = []
+                    ys = []
+                    for xys in region['polygon']:
+                        xs.append(xys['x'])
+                        ys.append(xys['y'])
+                    polygons.append({'all_points_x':xs, 'all_points_y': ys})
+                # remember labeling was done with jpg files, training is tif
+                self.addImage(img, polygons)
+            else:
+                continue
         
     def load_cell_Adarsh(self,data):
         for img in data:
