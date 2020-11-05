@@ -7,10 +7,10 @@ from skimage import exposure
 from os.path import join
 #%%
 config = cellmodel.AgingConfig()
-CELL_DIR = '/home/yanfei/Julie_Aging/20191007/output'
+CELL_DIR = '/home/yanfei/YangTraining/newOnes'
 print(CELL_DIR)
 
-dataset = cellmodel.AgingDataset()
+dataset = cellmodel.AgingDataset(labelMethod='SegmentPolygon')
 dataset.load_cell(CELL_DIR, "train")
 dataset.prepare()
 #%% 
@@ -27,9 +27,9 @@ for image_id in image_ids:
     mask, class_ids = dataset.load_mask(image_id)
     visualize.display_top_masks(image, mask, class_ids, dataset.class_names)
 #%%
-model_path = '/home/yanfei/adarsh/JulieMicroscopeWeight.h5'
+model_path = '/home/yanfei/agingAnalysis/09132020_35.h5'
 #model_path = 'last'
-cellmodel.train(CELL_DIR,model_path,'/home/yanfei/Julie_Aging/20191007/output/logs/')
+cellmodel.train(CELL_DIR,model_path,'/home/yanfei/Julie_Aging/20191007/output/logs/',labelMethod='SegmentPolygon')
 
 
 

@@ -167,15 +167,15 @@ class AgingDataset(utils.Dataset):
         # one class ID only, we return an array of 1s
         return mask.astype(np.bool), np.ones([mask.shape[-1]], dtype=np.int32)
 
-def train(data_directory,model_path,log_path):
+def train(data_directory,model_path,log_path,labelMethod='Adarsh'):
     """Train the model."""
     # Training dataset.
-    dataset_train = AgingDataset()
+    dataset_train = AgingDataset(labelMethod=labelMethod)
     dataset_train.load_cell(data_directory, "train")
     dataset_train.prepare()
 
     # Validation dataset
-    dataset_val = AgingDataset()
+    dataset_val = AgingDataset(labelMethod=labelMethod)
     dataset_val.load_cell(data_directory, "val")
     dataset_val.prepare()
 
